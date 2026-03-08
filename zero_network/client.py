@@ -205,3 +205,119 @@ class ZeroClient:
     async def afaucet(self, address: str) -> Dict[str, Any]:
         """Request testnet funds from the faucet (async)."""
         return await self._async_post(f"{self.faucet_url}/faucet", {"address": address})
+
+    # ── POST /api/bridge/in ──────────────────────────────────────────
+
+    def bridge_in(
+        self,
+        source_chain: str,
+        token: str,
+        tx_hash: str,
+        zero_recipient: str,
+    ) -> Dict[str, Any]:
+        """Report an L2 deposit to begin bridge-in (minting ZERO) (sync).
+
+        Args:
+            source_chain: Source chain name ("base", "arbitrum").
+            token: Token symbol ("USDC", "USDT").
+            tx_hash: L2 deposit transaction hash.
+            zero_recipient: Hex-encoded Zero public key (64 chars).
+
+        Returns:
+            Dict with bridge_id, status, z_amount.
+        """
+        payload = {
+            "source_chain": source_chain,
+            "token": token,
+            "tx_hash": tx_hash,
+            "zero_recipient": zero_recipient,
+        }
+        return self._sync_post(f"{self.rpc_url}/api/bridge/in", payload)
+
+    async def abridge_in(
+        self,
+        source_chain: str,
+        token: str,
+        tx_hash: str,
+        zero_recipient: str,
+    ) -> Dict[str, Any]:
+        """Report an L2 deposit to begin bridge-in (minting ZERO) (async)."""
+        payload = {
+            "source_chain": source_chain,
+            "token": token,
+            "tx_hash": tx_hash,
+            "zero_recipient": zero_recipient,
+        }
+        return await self._async_post(f"{self.rpc_url}/api/bridge/in", payload)
+
+    # ── POST /api/bridge/out ─────────────────────────────────────────
+
+    def bridge_out(
+        self,
+        dest_chain: str,
+        token: str,
+        dest_address: str,
+        z_amount: int,
+        from_pubkey: str,
+        signature: str,
+    ) -> Dict[str, Any]:
+        """Initiate bridge-out (burn ZERO -> release tokens on L2) (sync).
+
+        Args:
+            dest_chain: Destination chain ("base", "arbitrum").
+            token: Token to receive ("USDC", "USDT").
+            dest_address: L2 recipient address.
+            z_amount: Amount in Z units to burn.
+            from_pubkey: Hex-encoded sender's Zero public key.
+            signature: Hex-encoded Ed25519 signature over burn request.
+
+        Returns:
+            Dict with bridge_id, status.
+        """
+        payload = {
+            "dest_chain": dest_chain,
+            "token": token,
+            "dest_address": dest_address,
+            "z_amount": z_amount,
+            "from_pubkey": from_pubkey,
+            "signature": signature,
+        }
+        return self._sync_post(f"{self.rpc_url}/api/bridge/out", payload)
+
+    async def abridge_out(
+        self,
+        dest_chain: str,
+        token: str,
+        dest_address: str,
+        z_amount: int,
+        from_pubkey: str,
+        signature: str,
+    ) -> Dict[str, Any]:
+        """Initiate bridge-out (burn ZERO -> release tokens on L2) (async)."""
+        payload = {
+            "dest_chain": dest_chain,
+            "token": token,
+            "dest_address": dest_address,
+            "z_amount": z_amount,
+            "from_pubkey": from_pubkey,
+            "signature": signature,
+        }
+        return await self._async_post(f"{self.rpc_url}/api/bridge/out", payload)
+
+    # ── GET /api/bridge/status/:bridge_id ────────────────────────────
+
+    def bridge_status(self, bridge_id: str) -> Dict[str, Any]:
+        """Get status of a bridge operation (sync).
+
+        Args:
+            bridge_id: Bridge operation ID.
+
+        Returns:
+            Dict with bridge_id, direction, status, source_chain, token,
+            z_amount, attestations, required.
+        """
+        return self._sync_get(f"/api/bridge/status/{bridge_id}")
+
+    async def abridge_status(self, bridge_id: str) -> Dict[str, Any]:
+        """Get status of a bridge operation (async)."""
+        return await self._async_get(f"/api/bridge/status/{bridge_id}")
