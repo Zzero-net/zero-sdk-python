@@ -2,7 +2,7 @@
 
 Python SDK for the [Zero Network](https://zzero.net) — stablecoin microtransactions for AI agents.
 
-**1 Z = $0.01 USD** | Ed25519 signatures | 100-byte transactions | x402 support
+**1 Z = $0.01 USD** | Ed25519 signatures | 136-byte transactions | x402 support
 
 ## Install
 
@@ -140,8 +140,8 @@ print(client.account("pubkey_hex"))
 | Function | Description |
 |----------|-------------|
 | `build_transfer(from_pub, to_pub, amount, nonce)` | Build unsigned 72-byte tx |
-| `sign_transfer(unsigned_tx, signing_key)` | Sign and return 100-byte tx |
-| `parse_transfer(tx_bytes)` | Parse 100-byte tx into Transfer |
+| `sign_transfer(unsigned_tx, signing_key)` | Sign and return 136-byte tx |
+| `parse_transfer(tx_bytes)` | Parse 136-byte tx into Transfer |
 
 ### Constants
 
@@ -163,7 +163,7 @@ print(client.account("pubkey_hex"))
 - **Account creation**: 1.00 Z deducted on first receive
 - **Signatures**: Ed25519 (compatible with tweetnacl/dalek)
 - **Hashing**: BLAKE3
-- **Transaction size**: 100 bytes
+- **Transaction size**: 136 bytes
 
 ## License
 
