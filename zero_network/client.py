@@ -157,7 +157,7 @@ class ZeroClient:
             to_hex: Hex-encoded recipient public key.
             amount_units: Amount in internal units.
             nonce: Sender nonce.
-            signature_hex: Hex-encoded truncated signature (28 bytes).
+            signature_hex: Hex-encoded Ed25519 signature (64 bytes).
 
         Returns:
             API response dict.

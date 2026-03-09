@@ -40,7 +40,7 @@ from .constants import (
 from .transaction import Transfer, build_transfer, parse_transfer, sign_transfer
 from .wallet import Wallet
 
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 
 __all__ = [
     # Core

@@ -1,11 +1,11 @@
 """Transaction building and parsing for the Zero Network.
 
-Transaction format (100 bytes total):
-    from_pubkey[32] + to_pubkey[32] + amount[4] + nonce[4] + signature[28]
+Transaction format (136 bytes total):
+    from_pubkey[32] + to_pubkey[32] + amount[4] + nonce[4] + signature[64]
 
-The signature covers the first 72 bytes (from + to + amount + nonce) and is
-truncated to 28 bytes from the standard Ed25519 64-byte signature. This matches
-the wire format used by the Zero Network's Rust/tweetnacl implementations.
+The Ed25519 signature covers the first 72 bytes (from + to + amount + nonce).
+The full 64-byte signature is appended, matching the wire format required by
+the Zero Network validators.
 """
 
 from __future__ import annotations
@@ -71,17 +71,17 @@ def build_transfer(
 
 
 def sign_transfer(unsigned_tx: bytes, signing_key: SigningKey) -> bytes:
-    """Sign an unsigned transaction and return the complete 100-byte tx.
+    """Sign an unsigned transaction and return the complete 136-byte tx.
 
-    The Ed25519 signature is computed over the 72-byte unsigned payload,
-    then truncated to 28 bytes to fit the wire format.
+    The Ed25519 signature is computed over the 72-byte unsigned payload.
+    The full 64-byte signature is appended.
 
     Args:
         unsigned_tx: 72-byte unsigned transaction from build_transfer().
         signing_key: Ed25519 signing key (nacl.signing.SigningKey).
 
     Returns:
-        100-byte signed transaction ready for submission.
+        136-byte signed transaction ready for submission.
 
     Raises:
         ValueError: If unsigned_tx is not 72 bytes.
@@ -90,33 +90,35 @@ def sign_transfer(unsigned_tx: bytes, signing_key: SigningKey) -> bytes:
         raise ValueError(f"unsigned_tx must be 72 bytes, got {len(unsigned_tx)}")
 
     signed = signing_key.sign(unsigned_tx)
-    # signed.signature is the 64-byte Ed25519 signature
-    # Truncate to 28 bytes for the wire format
-    sig_truncated = signed.signature[:28]
-
-    return unsigned_tx + sig_truncated
+    # signed.signature is the full 64-byte Ed25519 signature
+    return unsigned_tx + signed.signature
 
 
 def parse_transfer(tx_bytes: bytes) -> Transfer:
-    """Parse a 100-byte transaction into its components.
+    """Parse a signed transaction into its components.
+
+    Accepts 136-byte (full signature) or 100-byte (legacy) format.
 
     Args:
-        tx_bytes: 100-byte signed transaction.
+        tx_bytes: Signed transaction bytes.
 
     Returns:
         Transfer dataclass with parsed fields.
 
     Raises:
-        ValueError: If tx_bytes is not 100 bytes.
+        ValueError: If tx_bytes is not 136 or 100 bytes.
     """
-    if len(tx_bytes) != TX_SIZE:
-        raise ValueError(f"tx_bytes must be {TX_SIZE} bytes, got {len(tx_bytes)}")
+    LEGACY_TX_SIZE = 100
+    if len(tx_bytes) != TX_SIZE and len(tx_bytes) != LEGACY_TX_SIZE:
+        raise ValueError(
+            f"tx_bytes must be {TX_SIZE} or {LEGACY_TX_SIZE} bytes, got {len(tx_bytes)}"
+        )
 
     from_pubkey = tx_bytes[0:32]
     to_pubkey = tx_bytes[32:64]
     amount_units = struct.unpack("<I", tx_bytes[64:68])[0]
     nonce = struct.unpack("<I", tx_bytes[68:72])[0]
-    signature = tx_bytes[72:100]
+    signature = tx_bytes[72:]
 
     return Transfer(
         from_pubkey=from_pubkey,
