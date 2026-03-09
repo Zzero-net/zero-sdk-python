@@ -200,11 +200,11 @@ class ZeroClient:
         Returns:
             Faucet response dict.
         """
-        return self._sync_post(f"{self.faucet_url}/faucet", {"address": address})
+        return self._sync_post(f"{self.faucet_url}/faucet", {"recipient": address})
 
     async def afaucet(self, address: str) -> Dict[str, Any]:
         """Request testnet funds from the faucet (async)."""
-        return await self._async_post(f"{self.faucet_url}/faucet", {"address": address})
+        return await self._async_post(f"{self.faucet_url}/faucet", {"recipient": address})
 
     # ── POST /api/bridge/in ──────────────────────────────────────────
 

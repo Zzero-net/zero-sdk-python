@@ -3,8 +3,11 @@
 # 1 Z = 100 units internally
 UNITS_PER_Z: int = 100
 
-# Flat transaction fee: 0.01 Z = 1 unit
+# Flat transfer fee: 0.01 Z = 1 unit
 FEE_UNITS: int = 1
+
+# Bridge-out fee: 0.5 Z = 50 units (covers EVM gas for vault release)
+BRIDGE_OUT_FEE_UNITS: int = 50
 
 # Maximum transfer: 25 Z = 2500 units
 MAX_TRANSFER_UNITS: int = 2500

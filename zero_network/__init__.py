@@ -30,6 +30,7 @@ from __future__ import annotations
 
 from .client import ZeroClient
 from .constants import (
+    BRIDGE_OUT_FEE_UNITS,
     DEFAULT_RPC,
     FEE_UNITS,
     MAX_TRANSFER_UNITS,
@@ -39,7 +40,7 @@ from .constants import (
 from .transaction import Transfer, build_transfer, parse_transfer, sign_transfer
 from .wallet import Wallet
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
     # Core
@@ -53,6 +54,7 @@ __all__ = [
     # Constants
     "UNITS_PER_Z",
     "FEE_UNITS",
+    "BRIDGE_OUT_FEE_UNITS",
     "MAX_TRANSFER_UNITS",
     "DEFAULT_RPC",
     "TESTNET_FAUCET",

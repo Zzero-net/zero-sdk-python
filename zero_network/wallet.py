@@ -177,8 +177,9 @@ class Wallet:
             amount_units=amount_units,
             nonce=nonce,
         )
-        signed = sign_transfer(unsigned, self._signing_key)
-        sig_hex = signed[72:100].hex()
+        # Sign the 72-byte payload and get the full 64-byte Ed25519 signature
+        signed_msg = self._signing_key.sign(unsigned)
+        sig_hex = signed_msg.signature.hex()  # Full 64-byte signature
 
         return {
             "from_hex": self.address,
@@ -237,9 +238,9 @@ class Wallet:
         """
         amount_units = self._z_to_units(amount_z)
 
-        # Fetch current nonce
+        # Fetch current nonce and increment (validator expects next nonce)
         acct = self._client.account(self.address)
-        nonce = acct.get("nonce", 0)
+        nonce = acct.get("nonce", 0) + 1
 
         payload = self._build_and_sign(to, amount_units, nonce)
         return self._client.send(**payload)
@@ -284,7 +285,7 @@ class Wallet:
         amount_units = self._z_to_units(amount_z)
 
         acct = await self._client.aaccount(self.address)
-        nonce = acct.get("nonce", 0)
+        nonce = acct.get("nonce", 0) + 1
 
         payload = self._build_and_sign(to, amount_units, nonce)
         return await self._client.asend(**payload)

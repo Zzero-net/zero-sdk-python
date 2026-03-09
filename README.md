@@ -148,7 +148,8 @@ print(client.account("pubkey_hex"))
 | Constant | Value | Description |
 |----------|-------|-------------|
 | `UNITS_PER_Z` | 100 | Internal units per 1 Z |
-| `FEE_UNITS` | 1 | Flat fee (0.01 Z) |
+| `FEE_UNITS` | 1 | Flat transfer fee (0.01 Z) |
+| `BRIDGE_OUT_FEE_UNITS` | 50 | Bridge-out fee (0.5 Z) |
 | `MAX_TRANSFER_UNITS` | 2500 | Max transfer (25 Z) |
 | `DEFAULT_RPC` | `https://rpc.zzero.net` | Default RPC endpoint |
 | `TESTNET_FAUCET` | `http://157.180.56.48:8093` | Testnet faucet |
@@ -156,7 +157,8 @@ print(client.account("pubkey_hex"))
 ## Network Details
 
 - **Denomination**: 1 Z = $0.01 USD = 100 internal units
-- **Fee**: 0.01 Z (1 unit) flat per transaction
+- **Transfer fee**: 0.01 Z (1 unit) flat per transaction
+- **Bridge-out fee**: 0.5 Z (50 units) per withdrawal
 - **Max transfer**: 25 Z (2500 units)
 - **Account creation**: 1.00 Z deducted on first receive
 - **Signatures**: Ed25519 (compatible with tweetnacl/dalek)
